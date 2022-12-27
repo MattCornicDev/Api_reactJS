@@ -1,25 +1,40 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from 'react'
 
-function App() {
+const App = () => {
+
+  function loadActivity() {
+    setIsLoading(true)
+    fetch("http://www.boredapi.com/api/activity/")
+      .then((response) => response.json())
+      .then((data) => {
+        setActivities([...activities, data])
+        setIsLoading(false)
+      }
+      )
+  }
+
+  const [activities, setActivities] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => { loadActivity() }, [])
+
+  if (activities.length === 0) {
+    return <p>Chargement en cours...</p>
+  }
+
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <ul>
+        {activities.map((activity) => {
+          return <li key={activity.key}>{activity.activity}</li>
+        })}
+      </ul>
+
+      <button disabled={isLoading} onClick={loadActivity}>Lancer un autre</button>
     </div>
-  );
+
+  )
 }
 
-export default App;
+export default App
